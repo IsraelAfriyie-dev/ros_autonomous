@@ -1,5 +1,5 @@
 <package format="3">
-  <name>ros_autonomous_slam</name>
+  <name>ros_autonomous</name>
   <version>1.0.0</version>
   <description>ROS 2 package for autonomous RRT-based exploration using TurtleBot3 Waffle Pi in simulated environments.</description>
   <maintainer email="mohamedfazilsulaiman@gmail.com">fazildgr8</maintainer>

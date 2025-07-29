@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5)
-project(ros_autonomous_slam)
+project(ros_autonomous)
 
 # Default to C++14
 if(NOT CMAKE_CXX_STANDARD)
@@ -65,7 +65,7 @@ ament_package()
 
 ## Generate added messages and services with any dependencies listed here
 cmake_minimum_required(VERSION 3.5)
-project(ros_autonomous_slam)
+project(ros_autonomous)
 
 # Default to C++14
 if(NOT CMAKE_CXX_STANDARD)

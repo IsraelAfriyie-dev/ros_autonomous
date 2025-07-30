@@ -14,7 +14,7 @@ def generate_launch_description():
         DeclareLaunchArgument('Geta', default_value='15.0'),
 
         Node(
-            package='ros_autonomous_slam',
+            package='ros_autonomous',
             executable='global_rrt_detector',
             name='global_detector',
             output='screen',
@@ -25,7 +25,7 @@ def generate_launch_description():
         ),
 
         Node(
-            package='ros_autonomous_slam',
+            package='ros_autonomous',
             executable='local_rrt_detector',
             name='local_detector',
             output='screen',
@@ -37,7 +37,7 @@ def generate_launch_description():
         ),
 
         Node(
-            package='ros_autonomous_slam',
+            package='ros_autonomous',
             executable='filter.py',
             name='filter',
             output='screen',
@@ -53,7 +53,7 @@ def generate_launch_description():
         ),
 
         Node(
-            package='ros_autonomous_slam',
+            package='ros_autonomous',
             executable='assigner.py',
             name='assigner',
             output='screen',

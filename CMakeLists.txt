@@ -72,14 +72,14 @@ install(TARGETS
 # Install launch and config files if they exist
 install(DIRECTORY launch/
   DESTINATION share/${PROJECT_NAME}/launch
-  FILES_MATCHING PATTERN "*.py" PATTERN "*.xml" PATTERN "*.yaml"
   OPTIONAL
+  FILES_MATCHING PATTERN "*.py" PATTERN "*.xml" PATTERN "*.yaml"
 )
 
 install(DIRECTORY config/
   DESTINATION share/${PROJECT_NAME}/config
-  FILES_MATCHING PATTERN "*.yaml" PATTERN "*.json" PATTERN "*.xml"
   OPTIONAL
+  FILES_MATCHING PATTERN "*.yaml" PATTERN "*.json" PATTERN "*.xml"
 )
 
 # Export dependencies

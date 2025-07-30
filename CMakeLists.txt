@@ -15,12 +15,13 @@ find_package(nav_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(tf2 REQUIRED)
 find_package(tf2_ros REQUIRED)
+find_package(tf2_geometry_msgs REQUIRED)
 find_package(visualization_msgs REQUIRED)
 
-# For message generation (only if you have custom messages)
+# For message generation
 find_package(rosidl_default_generators REQUIRED)
 
-# Declare custom messages (only if you have msg/PointArray.msg file)
+# Declare custom messages
 rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/PointArray.msg"
   DEPENDENCIES std_msgs geometry_msgs
@@ -39,6 +40,7 @@ ament_target_dependencies(global_rrt_detector
   sensor_msgs 
   tf2 
   tf2_ros 
+  tf2_geometry_msgs
   visualization_msgs
 )
 
@@ -51,16 +53,14 @@ ament_target_dependencies(local_rrt_detector
   sensor_msgs 
   tf2 
   tf2_ros 
+  tf2_geometry_msgs
   visualization_msgs
 )
 
-# Link custom messages with executables (only if using custom messages)
-rosidl_target_interfaces(global_rrt_detector
-  ${PROJECT_NAME} "rosidl_typesupport_cpp"
-)
-rosidl_target_interfaces(local_rrt_detector
-  ${PROJECT_NAME} "rosidl_typesupport_cpp"
-)
+# Link custom messages with executables (using newer method)
+rosidl_get_typesupport_target(cpp_typesupport_target ${PROJECT_NAME} "rosidl_typesupport_cpp")
+target_link_libraries(global_rrt_detector "${cpp_typesupport_target}")
+target_link_libraries(local_rrt_detector "${cpp_typesupport_target}")
 
 # Install executables
 install(TARGETS
@@ -73,11 +73,13 @@ install(TARGETS
 install(DIRECTORY launch/
   DESTINATION share/${PROJECT_NAME}/launch
   FILES_MATCHING PATTERN "*.py" PATTERN "*.xml" PATTERN "*.yaml"
+  OPTIONAL
 )
 
 install(DIRECTORY config/
   DESTINATION share/${PROJECT_NAME}/config
   FILES_MATCHING PATTERN "*.yaml" PATTERN "*.json" PATTERN "*.xml"
+  OPTIONAL
 )
 
 # Export dependencies

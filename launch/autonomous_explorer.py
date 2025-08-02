@@ -17,7 +17,8 @@ def generate_launch_description():
     open_rviz = LaunchConfiguration('open_rviz')
 
     turtlebot3_bringup = get_package_share_directory('turtlebot3_bringup')
-    turtlebot3_slam = get_package_share_directory('turtlebot3_slam')
+   # turtlebot3_slam = get_package_share_directory('turtlebot3_slam')
+    turtlebot3_slam = get_package_share_directory('turtlebot3_cartographer')
     ros_autonomous = get_package_share_directory('ros_autonomous')
 
     return LaunchDescription([

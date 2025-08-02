@@ -15,7 +15,7 @@ def generate_launch_description():
     y_pos = LaunchConfiguration('y_pos', default='0.5')
     z_pos = LaunchConfiguration('z_pos', default='0.0')
 
-    world_path = os.path.join(get_package_share_directory('ros_autonomous_slam'), 'worlds', 'moon.world')
+    world_path = os.path.join(get_package_share_directory('ros_autonomous'), 'worlds', 'moon.world')
     robot_desc_path = os.path.join(
         get_package_share_directory('turtlebot3_description'),
         'urdf', f'turtlebot3_{model.perform({})}.urdf.xacro'
@@ -55,3 +55,4 @@ def generate_launch_description():
             output='screen'
         ),
     ])
+

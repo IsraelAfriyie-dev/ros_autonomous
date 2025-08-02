@@ -18,8 +18,10 @@ def generate_launch_description():
     open_rviz = LaunchConfiguration('open_rviz')
 
     turtlebot3_bringup = get_package_share_directory('turtlebot3_bringup')
-    turtlebot3_slam = get_package_share_directory('turtlebot3_slam')
-    ros_autonomous_slam = get_package_share_directory('ros_autonomous_slam')
+   # turtlebot3_slam = get_package_share_directory('turtlebot3_slam')
+    ros_autonomous = get_package_share_directory('ros_autonomous')
+    turtlebot3_slam = get_package_share_directory('turtlebot3_cartographer')
+
 
     return LaunchDescription([
         DeclareLaunchArgument('model', default_value=TextSubstitution(text='waffle_pi')),
@@ -52,9 +54,10 @@ def generate_launch_description():
                 package='rviz2',
                 executable='rviz2',
                 name='rviz2',
-                arguments=['-d', os.path.join(ros_autonomous_slam, 'rviz', f'turtlebot3_{slam_methods.perform(None)}.rviz')],
+                arguments=['-d', os.path.join(ros_autonomous, 'rviz', f'turtlebot3_{slam_methods.perform(None)}.rviz')],
                 output='screen',
                 condition=IfCondition(open_rviz)
             )
         ])
     ])
+

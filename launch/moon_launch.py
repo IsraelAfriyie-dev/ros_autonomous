@@ -2,7 +2,7 @@
 
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription
-from launch.substitutions import LaunchConfiguration, Command, PathJoinSubstitution
+from launch.substitutions import LaunchConfiguration, Command, PathJoinSubstitution, TextSubstitution
 from launch_ros.actions import Node
 from launch_ros.substitutions import FindPackageShare
 from launch.launch_description_sources import PythonLaunchDescriptionSource
@@ -15,63 +15,43 @@ def generate_launch_description():
     x_pos = LaunchConfiguration('x_pos')
     y_pos = LaunchConfiguration('y_pos')
     z_pos = LaunchConfiguration('z_pos')
-    
-    # Package directories
-    turtlebot3_description_pkg = get_package_share_directory('turtlebot3_description')
+
+    # Get package paths
     gazebo_ros_pkg = get_package_share_directory('gazebo_ros')
+    turtlebot3_description_pkg = get_package_share_directory('turtlebot3_description')
     
-    # Try to get ros_autonomous package, fallback if it doesn't exist
+    # Try to get ros_autonomous package world
     try:
         ros_autonomous_pkg = get_package_share_directory('ros_autonomous')
         world_path = os.path.join(ros_autonomous_pkg, 'worlds', 'moon.world')
     except:
         world_path = None
-    
-    # Use custom world if it exists, otherwise use empty world
+
+    # Fallback to default world
     if world_path and os.path.exists(world_path):
         world_file = world_path
     else:
         world_file = os.path.join(gazebo_ros_pkg, 'worlds', 'empty.world')
-    
+
     return LaunchDescription([
         # Declare arguments
-        DeclareLaunchArgument(
-            'model', 
-            default_value='burger',  # Change to burger if waffle_pi isn't available
-            description='TurtleBot3 model type'
-        ),
-        DeclareLaunchArgument(
-            'x_pos', 
-            default_value='-2.0',
-            description='Initial X position of the robot'
-        ),
-        DeclareLaunchArgument(
-            'y_pos', 
-            default_value='0.5',
-            description='Initial Y position of the robot'
-        ),
-        DeclareLaunchArgument(
-            'z_pos', 
-            default_value='0.0',
-            description='Initial Z position of the robot'
-        ),
-        
-        # Launch Gazebo with world
+        DeclareLaunchArgument('model', default_value='burger', description='TurtleBot3 model'),
+        DeclareLaunchArgument('x_pos', default_value='-2.0', description='X position'),
+        DeclareLaunchArgument('y_pos', default_value='0.5', description='Y position'),
+        DeclareLaunchArgument('z_pos', default_value='0.0', description='Z position'),
+
+        # Launch Gazebo
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource(
                 os.path.join(gazebo_ros_pkg, 'launch', 'gazebo.launch.py')
             ),
-            launch_arguments={
-                'world': world_file,
-                'verbose': 'true'
-            }.items()
+            launch_arguments={'world': world_file}.items()
         ),
-        
-        # Publish robot state using xacro
+
+        # Publish robot_state
         Node(
             package='robot_state_publisher',
             executable='robot_state_publisher',
-            name='robot_state_publisher',
             output='screen',
             parameters=[{
                 'robot_description': Command([
@@ -79,15 +59,15 @@ def generate_launch_description():
                     PathJoinSubstitution([
                         FindPackageShare('turtlebot3_description'),
                         'urdf',
-                        'turtlebot3_'
-                    ]),
-                    model,
-                    '.urdf.xacro'
+                        TextSubstitution(text='turtlebot3_'),
+                        model,
+                        TextSubstitution(text='.urdf.xacro')
+                    ])
                 ])
             }]
         ),
-        
-        # Spawn TurtleBot3 in Gazebo
+
+        # Spawn the robot in Gazebo
         Node(
             package='gazebo_ros',
             executable='spawn_entity.py',

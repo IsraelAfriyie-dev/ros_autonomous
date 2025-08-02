@@ -1,36 +1,35 @@
 #!/usr/bin/env python3
-
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument
-from launch.substitutions import LaunchConfiguration, EnvironmentVariable
+from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription
+from launch.substitutions import LaunchConfiguration, TextSubstitution, PathJoinSubstitution, Command
 from launch_ros.actions import Node
-from launch.actions import IncludeLaunchDescription
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from ament_index_python.packages import get_package_share_directory
 import os
 
 def generate_launch_description():
-    model = LaunchConfiguration('model', default=EnvironmentVariable('TURTLEBOT3_MODEL'))
-    x_pos = LaunchConfiguration('x_pos', default='-2.0')
-    y_pos = LaunchConfiguration('y_pos', default='0.5')
-    z_pos = LaunchConfiguration('z_pos', default='0.0')
+    model = LaunchConfiguration('model')
+    x_pos = LaunchConfiguration('x_pos')
+    y_pos = LaunchConfiguration('y_pos')
+    z_pos = LaunchConfiguration('z_pos')
 
-    world_path = os.path.join(get_package_share_directory('ros_autonomous'), 'worlds', 'moon.world')
-    robot_desc_path = os.path.join(
-        get_package_share_directory('turtlebot3_description'),
-        'urdf', f'turtlebot3_{model.perform({})}.urdf.xacro'
-    )
+    # Package directories
+    turtlebot3_description_pkg = get_package_share_directory('turtlebot3_description')
+    gazebo_ros_pkg = get_package_share_directory('gazebo_ros')
+    ros_autonomous_pkg = get_package_share_directory('ros_autonomous')
 
+    world_path = os.path.join(ros_autonomous_pkg, 'worlds', 'moon.world')
+    
     return LaunchDescription([
-        DeclareLaunchArgument('model', default_value=EnvironmentVariable('TURTLEBOT3_MODEL')),
-        DeclareLaunchArgument('x_pos', default_value='-2.0'),
-        DeclareLaunchArgument('y_pos', default_value='0.5'),
-        DeclareLaunchArgument('z_pos', default_value='0.0'),
+        DeclareLaunchArgument('model', default_value=TextSubstitution(text='waffle_pi')),
+        DeclareLaunchArgument('x_pos', default_value=TextSubstitution(text='-2.0')),
+        DeclareLaunchArgument('y_pos', default_value=TextSubstitution(text='0.5')),
+        DeclareLaunchArgument('z_pos', default_value=TextSubstitution(text='0.0')),
 
         IncludeLaunchDescription(
-            PythonLaunchDescriptionSource(os.path.join(
-                get_package_share_directory('gazebo_ros'), 'launch', 'gazebo.launch.py'
-            )),
+            PythonLaunchDescriptionSource(
+                os.path.join(gazebo_ros_pkg, 'launch', 'gazebo.launch.py')
+            ),
             launch_arguments={'world': world_path}.items()
         ),
 
@@ -39,20 +38,28 @@ def generate_launch_description():
             executable='robot_state_publisher',
             name='robot_state_publisher',
             output='screen',
-            parameters=[{'robot_description': os.popen(f'xacro {robot_desc_path}').read()}]
+            parameters=[{
+                'robot_description': Command([
+                    'xacro ',
+                    PathJoinSubstitution([
+                        turtlebot3_description_pkg, 'urdf',
+                        TextSubstitution(text='turtlebot3_'), model,
+                        TextSubstitution(text='.urdf.xacro')
+                    ])
+                ])
+            }]
         ),
 
         Node(
             package='gazebo_ros',
             executable='spawn_entity.py',
             arguments=[
-                '-entity', f'turtlebot3_{model.perform({})}',
+                '-entity', TextSubstitution(text='turtlebot3_'), model,
+                '-topic', 'robot_description',
                 '-x', x_pos,
                 '-y', y_pos,
-                '-z', z_pos,
-                '-topic', 'robot_description'
+                '-z', z_pos
             ],
             output='screen'
-        ),
+        )
     ])
-

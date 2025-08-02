@@ -37,7 +37,7 @@ def generate_launch_description():
         # Declare arguments
         DeclareLaunchArgument(
             'model', 
-            default_value='waffle_pi',
+            default_value='burger',  # Change to burger if waffle_pi isn't available
             description='TurtleBot3 model type'
         ),
         DeclareLaunchArgument(
